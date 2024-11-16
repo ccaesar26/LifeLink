@@ -1,11 +1,16 @@
 package com.example.lifelink.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.lifelink.R
+import com.example.lifelink.ui.login.LoginActivity
+import com.example.lifelink.ui.register.RegisterActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,5 +22,33 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val currentUser = firebaseAuth.currentUser
+
+        if (currentUser != null) {
+            val intent = Intent(this, AppActivity::class.java)
+            startActivity(intent)
+        }
+
+        val loginButton: Button = findViewById(R.id.btn_login)
+        loginButton.setOnClickListener {
+            goToLogin()
+        }
+
+        val registerButton: Button = findViewById(R.id.btn_register)
+        registerButton.setOnClickListener {
+            goToRegister()
+        }
+    }
+
+    private fun goToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun goToRegister() {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
     }
 }
