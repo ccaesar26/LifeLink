@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BloodHub</string>
+    <string name="app_name">LifeLink</string>
     <string name="welcome">Welcome to BloodHub!</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
