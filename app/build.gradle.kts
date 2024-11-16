@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    id("androidx.navigation.safeargs.kotlin")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -48,4 +50,40 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Navigation
+    implementation(libs.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
+
+    //Glide
+    implementation(libs.glide)
+
+    // Room Database
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    //noinspection KaptUsageInsteadOfKsp
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    androidTestImplementation(libs.androidx.room.testing)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.lifecycle.common.java8)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Kotlin Coroutines
+    implementation(libs.kotlin.stdlib.jdk8)
+    api(libs.kotlinx.coroutines.android)
+    api(libs.kotlinx.coroutines.core)
+
+    // Volley
+    implementation(libs.volley)
+    implementation(libs.gson)
+
+    // QR Code Scanner
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.core)
 }
