@@ -11,7 +11,7 @@
     tools:context=".ui.profile.UserProfileFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/iv_user_profile_picture"
+        android:id="@+id/iv_user_profile_picture_profile"
         android:layout_width="@dimen/extra_extra_large_125"
         android:layout_height="@dimen/extra_extra_large_125"
         android:contentDescription="@string/profile_picture"
@@ -81,7 +81,7 @@
             android:textSize="@dimen/text_75" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_gender"
+            android:id="@+id/tv_gender_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_75"
@@ -104,7 +104,7 @@
             android:textSize="@dimen/text_75" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_blood_group"
+            android:id="@+id/tv_blood_group_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_75"
