@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appointment_nav_graph"
+    app:startDestination="@id/loadingFragment">
+
+    <fragment
+        android:id="@+id/my_appointments"
+        android:name="com.example.lifelink.ui.appointments.MyAppointments"
+        android:label="MyAppointments" />
+    <fragment
+        android:id="@+id/my_appointments_empty"
+        android:name="com.example.lifelink.ui.appointments.MyAppointmentsEmpty"
+        android:label="MyAppointmentsEmpty" >
+        <action
+            android:id="@+id/action_my_appointments_empty_to_scanQrAppointment"
+            app:destination="@id/scanQrAppointment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.example.lifelink.ui.register.LoadingFragment"
+        android:label="fragment_loading"
+        tools:layout="@layout/fragment_loading" />
+    <fragment
+        android:id="@+id/newAppointmentFragment2"
+        android:name="com.example.lifelink.ui.appointments.NewAppointmentFragment"
+        android:label="NewAppointmentFragment" />
+    <fragment
+        android:id="@+id/scanQrAppointment"
+        android:name="com.example.lifelink.ui.appointments.ScanQrAppointment"
+        android:label="fragment_scan_qr_appointment"
+        tools:layout="@layout/fragment_scan_qr_appointment" >
+        <action
+            android:id="@+id/action_scanQrAppointment_to_newAppointmentFragment2"
+            app:destination="@id/newAppointmentFragment2">
+            <argument
+                android:name="donationCenterId"
+                app:argType="integer" />
+        </action>
+    </fragment>
+</navigation>

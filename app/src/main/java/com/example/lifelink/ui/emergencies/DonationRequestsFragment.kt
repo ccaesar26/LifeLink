@@ -5,56 +5,94 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.example.lifelink.ApplicationController
 import com.example.lifelink.R
+import com.example.lifelink.data.local.entity.Emergency
+import com.example.lifelink.data.repository.EmergencyRepository
+import com.example.lifelink.helpers.VolleyRequestQueue
+import com.example.lifelink.helpers.extensions.logErrorMessage
+import com.example.lifelink.ui.models.EmergencyItemModel
+import com.google.gson.Gson
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DonationRequestsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DonationRequestsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private val itemList = ArrayList<EmergencyItemModel>()
+    private val adapter = EmergenciesAdapter(itemList)
+
+    private lateinit var viewModel: EmergencyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
+        val database = ApplicationController.instance.appDatabase
+        val factory = EmergencyViewModelFactory(EmergencyRepository(database.emergencyDao()))
+        viewModel = ViewModelProvider(this, factory)[EmergencyViewModel::class.java]
+
+        viewModel.allEmergencies.observe(this) { emergencies ->
+            if (emergencies.isEmpty()) {
+                // Retrieve emergencies from api
+                val url = "https://lifelink.free.beeceptor.com/data/emrg" /*https://mocki.io/v1/105376f4-efef-4a70-9a6a-35ca5bf4b361"*/
+
+                val stringRequest = StringRequest(
+                    Request.Method.GET, url,
+                    { response ->
+                        // Insert into database
+                        val responseList =
+                            Gson().fromJson(response, Array<Emergency>::class.java).toList()
+
+                        for (emergency in responseList) {
+                            viewModel.insertEmergency(emergency)
+                        }
+                        adapter.notifyDataSetChanged()
+                    },
+                    { error ->
+                        // Show error message
+                        "Error: $error".logErrorMessage()
+                    }
+                )
+                VolleyRequestQueue.addToRequestQueue(stringRequest)
+            }
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_donation_requests, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_donation_requests, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpEmergencyList()
+        getEmergencyItems()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DonationRequestsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DonationRequestsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun setUpEmergencyList() {
+        val layoutManager = LinearLayoutManager(context)
+
+        view?.findViewById<RecyclerView>(R.id.rv_emergencies)?.apply {
+
+            this.layoutManager = layoutManager
+            this.adapter = this@DonationRequestsFragment.adapter
+        }
+    }
+
+    private fun getEmergencyItems() {
+        viewModel.allEmergencies.observe(viewLifecycleOwner) { emergencies ->
+            itemList.clear()
+            itemList.addAll(emergencies.map {
+                EmergencyItemModel(
+                    it.id,
+                    it.clinicName,
+                    it.bloodType
+                )
+            })
+            adapter.notifyDataSetChanged()
+        }
     }
 }

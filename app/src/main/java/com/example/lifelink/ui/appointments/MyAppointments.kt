@@ -1,24 +1,23 @@
 package com.example.lifelink.ui.appointments
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import com.example.lifelink.ApplicationController
 import com.example.lifelink.R
 import com.example.lifelink.data.repository.AppointmentRepository
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
-import java.text.DateFormat
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
-class AppointmentsListFragment : Fragment() {
+
+class MyAppointments() : Fragment() {
+
     private lateinit var viewModel: AppointmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,29 +34,26 @@ class AppointmentsListFragment : Fragment() {
         viewModel.loadMostRecentAppointment(currentUser.uid)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_my_appointments, container, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navHostFragment = childFragmentManager.findFragmentById(R.id.appointments_nav_host) as? NavHostFragment
-        val navController = navHostFragment?.navController
+        val upcomingAppointmentTime =
+            view.findViewById<MaterialTextView>(R.id.tv_upcoming_appointment_time)
+        val upcomingAppointmentLocation =
+            view.findViewById<MaterialTextView>(R.id.tv_upcoming_appointment_location)
 
         viewModel.mostRecentAppointment.observe(viewLifecycleOwner) { appointment ->
             if (appointment != null) {
-                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                if (appointment.date >= LocalDate.now().format(formatter)) {
-                    navController?.navigate(R.id.my_appointments)
-                } else {
-                    navController?.navigate(R.id.my_appointments_empty)
-                }
-            } else {
-                navController?.navigate(R.id.my_appointments_empty)
+                upcomingAppointmentTime.text = appointment.date
+                upcomingAppointmentLocation.text = appointment.clinicName
             }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_appointments_list, container, false)
 
 }
